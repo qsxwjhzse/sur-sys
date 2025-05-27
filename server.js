@@ -10,12 +10,9 @@ const PORT = process.env.PORT || 3000;
 // 中间件
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
 
-// 将现有的静态文件移动到 public 目录
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// 静态文件服务
+app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB 连接
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/survey-system')
@@ -58,6 +55,11 @@ app.delete('/api/surveys/:id', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// 处理所有其他路由，返回 index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
